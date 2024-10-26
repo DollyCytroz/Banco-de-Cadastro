@@ -1,4 +1,5 @@
 const express = require('express');
+const { create } = require("express-handlebars");
  
  
 const app = express();
@@ -27,6 +28,15 @@ app.get("/funcionario/:nome/:cargo/:cpf/:data_contratacao/:salario/:rendimento",
 app.get("/htmlteste", function (req,res) {
   res.sendFile(__dirname + "/html/index.html");
 });
+
+app.get("/cad", function (req, res) {
+  res.render("form");
+});
+
+
+const abs = create({ defaultLayout: "main" });
+app.engine("handlebars", abs.engine);
+app.set("view engine", "handlebars");
  
  
 app.listen(3031, function () {
