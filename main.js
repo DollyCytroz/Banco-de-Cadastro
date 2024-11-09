@@ -1,6 +1,9 @@
 const express = require("express");
 const rotas = express();
 const Sequelize = require("sequelize");
+const cors = require('cors');
+
+rotas.use(cors()); 
 
 //###Banco de dados###
 const conexaoBanco = new Sequelize("cadastro", "root", "", {
@@ -132,6 +135,7 @@ rotas.get("/mostrar_departamentos", async function (req, res) {
 
 
   // Excluir
+  // Talvez você precise mudar para .delet
   rotas.get("/deletar_empresa/:id", async function (req, res) {
     const { id } = req.params;
     const idNumber = parseInt(id, 10); // Converte o ID para número
