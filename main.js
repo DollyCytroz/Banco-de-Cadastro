@@ -105,8 +105,16 @@ rotas.get("/salvar_departamento/:nome_departamento/:localizacao_departamento/:nu
 rotas.get("/salvar_funcionario/:nome_funcionario/:cpf_funcionario/:cargo_funcionario/:data_contratacao_funcionario/:data_demissao_funcionario/:salario/:rendimento_funcionario", async function (req, res) {
   const { nome_funcionario, cpf_funcionario, cargo_funcionario, data_contratacao_funcionario, data_demissao_funcionario, salario, rendimento_funcionario } = req.params;
 
-  const novoFuncionario = await Funcionario.create({ nome_funcionario, cpf_funcionario, cargo_funcionario, data_contratacao_funcionario, data_demissao_funcionario, salario, rendimento_funcionario });
-  
+  const novoFuncionario = await Funcionario.create({
+    nome_funcionario,
+    cpf_funcionario,
+    cargo_funcionario,
+    data_contratacao_funcionario,
+    data_demissao_funcionario: data_demissao_funcionario === "null" ? null : data_demissao_funcionario, // Tratamento explícito
+    salario,
+    rendimento_funcionario,
+});
+
   res.json({
     resposta: "Funcionário criado com sucesso",
     funcionario: novoFuncionario,
@@ -214,22 +222,39 @@ rotas.get("/editarEmpresa/:id/:nome_empresa/:endereco_empresa/:cnpj/:num_departa
       mensagem: "Departamento atualizado com sucesso",
     });
   });
+
+
   rotas.get("/editarFuncionarios/:id/:nome_funcionario/:cpf_funcionario/:cargo_funcionario/:data_contratacao_funcionario/:data_demissao_funcionario/:salario/:rendimento_funcionario", async function (req, res) {
     const { id, nome_funcionario, cpf_funcionario, cargo_funcionario, data_contratacao_funcionario, data_demissao_funcionario, salario, rendimento_funcionario} = req.params;
     const idNumber = parseInt(id, 10); // Converte o ID para número
-  
-    const [updated] = await Departamento.update(
-      { nome_funcionario, cpf_funcionario, cargo_funcionario, data_contratacao_funcionario, data_demissao_funcionario, salario, rendimento_funcionario},
+
+    // Se a data de demissão for "null" (vazio no frontend), definimos como null
+    const dataDemissao = data_demissao_funcionario === "null" ? null : data_demissao_funcionario;
+
+    // Atualiza o funcionário no banco de dados
+    const [updated] = await Funcionario.update(
+      { 
+        nome_funcionario, 
+        cpf_funcionario, 
+        cargo_funcionario, 
+        data_contratacao_funcionario, 
+        data_demissao_funcionario: dataDemissao, // Atualiza com a data de demissão correta
+        salario, 
+        rendimento_funcionario
+      },
       {
         where: { id: idNumber }, // Usa o ID numérico
       }
     );
   
-    res.json({
-      mensagem: "Funcionario atualizado com sucesso",
-    });
-  });
-
+    if (updated) {
+        res.json({
+            mensagem: "Funcionário atualizado com sucesso",
+        });
+    } else {
+        res.status(404).json({ mensagem: "Funcionário não encontrado" });
+    }
+});
 
 //###Servidor###
 rotas.listen(3031, function () {
