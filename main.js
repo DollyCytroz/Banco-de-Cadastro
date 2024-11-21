@@ -174,7 +174,7 @@ rotas.get("/mostrar_departamentos", async function (req, res) {
     }
   });
 
-  rotas.get("/deletar_funcionario/:id", async function (req, res) {
+  rotas.delete("/deletar_funcionario/:id", async function (req, res) {
     const { id } = req.params;
     const idNumber = parseInt(id, 10); // Converte o ID para número
   
